@@ -19,4 +19,10 @@ export const formInputsList:IFormInput[] = [
     label: "Product Image URl",
     type: "text",
   },
+  {
+    id: "price",
+    name: "price",
+    label: "Product Price",
+    type: "text",
+  },
 ];

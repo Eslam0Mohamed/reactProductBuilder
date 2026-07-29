@@ -1,7 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle} from "@headlessui/react";
 import { type ReactNode } from "react";
-import { formInputsList } from "../../data";
-import Input from "../Input";
 
 
 interface IProps {
