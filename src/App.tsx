@@ -7,7 +7,7 @@ import {
 import ProductCard from "./components/ProductCard";
 import Modal from "./components/ui/Modal";
 import Button from "./components/ui/Button";
-import { colors, formInputsList } from "./data";
+import { colors, formInputsList, productsList } from "./data";
 import Input from "./components/Input";
 import type { IProduct } from "./interfaces";
 import { productValidation } from "./validation/productValidation";
@@ -21,7 +21,7 @@ const App = ({}: IProps) => {
     description: "",
     imageURL: "",
     price: "",
-    colors: "",
+    colors: [],
     category: {
       name: "",
       imageURL: "",
@@ -35,14 +35,18 @@ const App = ({}: IProps) => {
     imageURL: string;
     price: string;
   }>({ title: "", description: "", imageURL: "", price: "" });
+  let [products, setProducts] = useState<IProduct[]>(productsList);
   let [product, setProduct] = useState<IProduct>(defualtProductObj);
-  console.log(tempColor);
+
+  const renderProduct = products.map((product) => (
+    <ProductCard key={product.title} product={product} />
+  ));
   const renderColors = colors.map((color) => (
     <CircleColor
       key={color}
       color={color}
       onClick={() => {
-        if (tempColor.includes(color)){
+        if (tempColor.includes(color)) {
           return setTempColor(tempColor.filter((c) => c !== color));
         }
         setTempColor([...tempColor, color]);
@@ -59,11 +63,11 @@ const App = ({}: IProps) => {
   }
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>): void => {
     const { value, name } = e.target;
+    console.log(value, name);
     setProduct({ ...product, [name]: value });
     setErrors({ ...errors, [name]: " " });
   };
   const submitHandler = (e: FormEvent<HTMLFormElement>): void => {
-    const { title, description, imageURL, price } = product;
     console.log(product);
     e.preventDefault();
     const errors = productValidation(product);
@@ -73,8 +77,12 @@ const App = ({}: IProps) => {
       console.log(errors);
       return;
     }
-    console.log({ title, description, imageURL, price });
     console.log("data sent to DB");
+    setProducts([...products,{...product,colors:tempColor}]);
+    setProduct(defualtProductObj);
+    setTempColor([]);
+    close();  
+    
   };
   const onCancel = () => {
     console.log("cancel");
@@ -87,10 +95,7 @@ const App = ({}: IProps) => {
         ADD NEW Product
       </Button>
       <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 w-11/12 mx-auto py-6">
-        <ProductCard></ProductCard>
-        <ProductCard></ProductCard>
-        <ProductCard></ProductCard>
-        <ProductCard></ProductCard>
+{renderProduct}
       </div>
       <Modal title="Adding Product" isOpen={isOpen} closeModel={close}>
         <form onSubmit={submitHandler}>
@@ -120,7 +125,13 @@ const App = ({}: IProps) => {
           })}
           <div>
             {tempColor.map((color) => (
-              <span key={color} className=" inline-block rounded-md m-1 p-1 text-white text-sm" style={{ backgroundColor: color }}>{color}</span>
+              <span
+                key={color}
+                className=" inline-block rounded-md m-1 p-1 text-white text-sm"
+                style={{ backgroundColor: color }}
+              >
+                {color}
+              </span>
             ))}
           </div>
           <div className="flex flex-wrap gap-2 mb-4">{renderColors}</div>

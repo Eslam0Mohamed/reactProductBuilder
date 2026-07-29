@@ -10,7 +10,7 @@ export interface IFormInput {
     description:string,
     imageURL:string,
     price:string,
-    colors:string,
+    colors:string[],
     category:{
       name:string,
       imageURL:string,

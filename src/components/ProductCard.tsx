@@ -1,30 +1,38 @@
+import type { IProduct } from "../interfaces";
 import Image from "./Image";
 import Button from "./ui/Button";
+import CircleColor from "./ui/CircleColor";
 
-interface IProps {}
-const ProductCard = ({}: IProps) => {
+interface IProps {
+  product:IProduct
+}
+const ProductCard = ({product}: IProps) => {
+
+    const renderColors = product.colors.map((color) => (
+    <CircleColor
+      key={color}
+      color={color}
+    />
+  ));
   return (
     <div className="p-3 border border-gray-400 rounded-2xl sm:max-w-sm md:max-w-lg">
       <Image
-        imageURL="https://images.pexels.com/photos/34106025/pexels-photo-34106025.jpeg"
-        alt="product name"
+        imageURL={product.imageURL}
+        alt={product.title}
         className="rounded-2xl h-64 w-full object-cover"
       />
-      <h3>kia cerato 2017mm</h3>
+      <h3>{product.title}</h3>
       <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur
-        fugiat provident nulla autem magnam nostrum ad. Nemo, dignissimos!
+        {product.description}
       </p>
       <div className="flex space-x-2 p-1">
-        <span className="w-5 h-5 bg-indigo-500 rounded-full"></span>
-        <span className="w-5 h-5 bg-indigo-900 rounded-full"></span>
-        <span className="w-5 h-5 bg-indigo-200 rounded-full"></span>
+       {renderColors}
       </div>
       <div className="flex justify-between items-center">
-        <span className="text-xl font-bold ">$500.000</span>
+        <span className="text-xl font-bold ">{product.price}</span>
         <Image
-          imageURL="https://images.pexels.com/photos/34106025/pexels-photo-34106025.jpeg"
-          alt="product name"
+          imageURL={product.imageURL}
+          alt={product.title}
           className="w-10 h-10 rounded-full"
         />
       </div>
