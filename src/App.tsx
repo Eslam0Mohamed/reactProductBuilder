@@ -7,11 +7,12 @@ import {
 import ProductCard from "./components/ProductCard";
 import Modal from "./components/ui/Modal";
 import Button from "./components/ui/Button";
-import { formInputsList } from "./data";
+import { colors, formInputsList } from "./data";
 import Input from "./components/Input";
 import type { IProduct } from "./interfaces";
-import {productValidation} from "./validation/productValidation"
+import { productValidation } from "./validation/productValidation";
 import ErrorMessage from "./components/ErrorMessage";
+import CircleColor from "./components/ui/CircleColor";
 
 interface IProps {}
 const App = ({}: IProps) => {
@@ -27,9 +28,28 @@ const App = ({}: IProps) => {
     },
   };
   let [isOpen, setIsOpen] = useState(false);
-  let [errors, setErrors] = useState<{title: string,description: string,imageURL: string,price: string}>({title: "",description: "",imageURL: "",price: ""});
+  let [tempColor, setTempColor] = useState<string[]>([]);
+  let [errors, setErrors] = useState<{
+    title: string;
+    description: string;
+    imageURL: string;
+    price: string;
+  }>({ title: "", description: "", imageURL: "", price: "" });
   let [product, setProduct] = useState<IProduct>(defualtProductObj);
-
+  console.log(tempColor);
+  const renderColors = colors.map((color) => (
+    <CircleColor
+      key={color}
+      color={color}
+      onClick={() => {
+        if (tempColor.includes(color)){
+          return setTempColor(tempColor.filter((c) => c !== color));
+        }
+        setTempColor([...tempColor, color]);
+      }}
+    />
+  ));
+  console.log(renderColors);
   function open() {
     setIsOpen(true);
   }
@@ -39,25 +59,27 @@ const App = ({}: IProps) => {
   }
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>): void => {
     const { value, name } = e.target;
-    setProduct({...product,[name]:value})
-    setErrors({...errors,[name]:""})
+    setProduct({ ...product, [name]: value });
+    setErrors({ ...errors, [name]: " " });
   };
   const submitHandler = (e: FormEvent<HTMLFormElement>): void => {
-    const {title,description,imageURL,price}=product
+    const { title, description, imageURL, price } = product;
+    console.log(product);
     e.preventDefault();
     const errors = productValidation(product);
     setErrors(errors);
- const hasError = Object.values(errors).some(v => v !== "") 
- if (hasError) {
-     console.log(errors);
-    return 
-   }
-     console.log({title,description,imageURL,price});
+    const hasError = Object.values(errors).some((v) => v !== "");
+    if (hasError) {
+      console.log(errors);
+      return;
+    }
+    console.log({ title, description, imageURL, price });
+    console.log("data sent to DB");
   };
   const onCancel = () => {
     console.log("cancel");
     setProduct(defualtProductObj);
-    close()
+    close();
   };
   return (
     <>
@@ -74,24 +96,37 @@ const App = ({}: IProps) => {
         <form onSubmit={submitHandler}>
           {formInputsList.map((input) => {
             return (
-              <div className="flex flex-col space-y-2 mb-2">
+              <div key={input.id} className="flex flex-col space-y-2 mb-2">
                 <label
                   className="text-sm font-medium text-gray-700"
                   htmlFor={input.id}
                 >
                   {input.label}
                 </label>
-                <Input name={input.name} id={input.id} type={input.type} onChange={onChangeHandler} />
-              
-              {errors[input.name as keyof typeof errors] && (
-                <ErrorMessage msg={errors[input.name as keyof typeof errors]} />
-              )}
+                <Input
+                  name={input.name}
+                  id={input.id}
+                  type={input.type}
+                  onChange={onChangeHandler}
+                />
+
+                {errors[input.name as keyof typeof errors] && (
+                  <ErrorMessage
+                    msg={errors[input.name as keyof typeof errors]}
+                  />
+                )}
               </div>
             );
           })}
+          <div>
+            {tempColor.map((color) => (
+              <span key={color} className=" inline-block rounded-md m-1 p-1 text-white text-sm" style={{ backgroundColor: color }}>{color}</span>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2 mb-4">{renderColors}</div>
           <div className="flex items-center space-x-3">
             <Button className="bg-indigo-500 ">Submit</Button>
-            <Button className="bg-gray-500 " onClick={onCancel}>
+            <Button className="bg-gray-500 " type="button" onClick={onCancel}>
               Cancel
             </Button>
           </div>
