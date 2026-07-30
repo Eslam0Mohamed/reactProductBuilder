@@ -16,3 +16,8 @@ export interface IFormInput {
       imageURL:string,
     },
   }
+  export interface ICategory {
+  id: number;
+  name: string;
+  imageURL: string;
+}

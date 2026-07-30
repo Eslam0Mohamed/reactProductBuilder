@@ -7,12 +7,13 @@ import {
 import ProductCard from "./components/ProductCard";
 import Modal from "./components/ui/Modal";
 import Button from "./components/ui/Button";
-import { colors, formInputsList, productsList } from "./data";
+import { categories, colors, formInputsList, productsList } from "./data";
 import Input from "./components/Input";
-import type { IProduct } from "./interfaces";
+import type { ICategory, IProduct } from "./interfaces";
 import { productValidation } from "./validation/productValidation";
 import ErrorMessage from "./components/ErrorMessage";
 import CircleColor from "./components/ui/CircleColor";
+import Select from "./components/ui/Select";
 
 interface IProps {}
 const App = ({}: IProps) => {
@@ -37,6 +38,7 @@ const App = ({}: IProps) => {
   }>({ title: "", description: "", imageURL: "", price: "" });
   let [products, setProducts] = useState<IProduct[]>(productsList);
   let [product, setProduct] = useState<IProduct>(defualtProductObj);
+  let [selectedCategory, setSelectedCategory] = useState<ICategory>(categories[0]);
 
   const renderProduct = products.map((product) => (
     <ProductCard key={product.title} product={product} />
@@ -53,7 +55,6 @@ const App = ({}: IProps) => {
       }}
     />
   ));
-  console.log(renderColors);
   function open() {
     setIsOpen(true);
   }
@@ -78,7 +79,7 @@ const App = ({}: IProps) => {
       return;
     }
     console.log("data sent to DB");
-    setProducts([...products,{...product,colors:tempColor}]);
+    setProducts([...products,{...product,colors:tempColor,category:selectedCategory}]);
     setProduct(defualtProductObj);
     setTempColor([]);
     close();  
@@ -134,8 +135,9 @@ const App = ({}: IProps) => {
               </span>
             ))}
           </div>
-          <div className="flex flex-wrap gap-2 mb-4">{renderColors}</div>
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap gap-2">{renderColors}</div>
+          <Select selected={selectedCategory} setSelected={setSelectedCategory} />
+          <div className="flex items-center mt-2 space-x-3">
             <Button className="bg-indigo-500 ">Submit</Button>
             <Button className="bg-gray-500 " type="button" onClick={onCancel}>
               Cancel

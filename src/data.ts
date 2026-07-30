@@ -1,4 +1,4 @@
-import type { IFormInput } from "./interfaces";
+import type { ICategory, IFormInput } from "./interfaces";
 import type { IProduct } from "./interfaces";
 
 export const formInputsList:IFormInput[] = [
@@ -41,8 +41,6 @@ export const colors: string[] = [
   "#1F8A70",
 
 ];
-
-
 export const productsList: IProduct[] = [
   {
     title: "Kia Cerato 2017",
@@ -95,5 +93,38 @@ export const productsList: IProduct[] = [
       imageURL:
         "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg",
     },
+  },
+];
+
+export const categories:ICategory[] = [
+  {
+    id: 1,
+    name: "Cars",
+    imageURL:
+      "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg",
+  },
+  {
+    id: 2,
+    name: "Electronics",
+    imageURL:
+      "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg",
+  },
+  {
+    id: 3,
+    name: "Fashion",
+    imageURL:
+      "https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg",
+  },
+  {
+    id: 4,
+    name: "Furniture",
+    imageURL:
+      "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg",
+  },
+  {
+    id: 5,
+    name: "Sports",
+    imageURL:
+      "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg",
   },
 ];
