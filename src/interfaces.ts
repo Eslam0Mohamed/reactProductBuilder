@@ -1,6 +1,8 @@
+import type { TproductName } from "./types";
+
 export interface IFormInput {
   id: string;
-  name: string;
+  name: TproductName;
   label: string;
   type: string;
 }
@@ -17,7 +19,7 @@ export interface IFormInput {
     },
   }
   export interface ICategory {
-  id: number;
+  id?: number;
   name: string;
   imageURL: string;
 }

@@ -4,16 +4,22 @@ import Button from "./ui/Button";
 import CircleColor from "./ui/CircleColor";
 
 interface IProps {
-  product:IProduct
+  product: IProduct;
+  setProductToEdit: (product: IProduct) => void;
+  openEdit: () => void;
+  index: number;
+  setProductToEditIndex: (index: number) => void;
 }
-const ProductCard = ({product}: IProps) => {
-
-    const renderColors = product.colors.map((color) => (
-    <CircleColor
-      key={color}
-      color={color}
-    />
+const ProductCard = ({ product, setProductToEdit, openEdit, index, setProductToEditIndex }: IProps) => {
+  const renderColors = product.colors.map((color) => (
+    <CircleColor key={color} color={color} />
   ));
+  const onEdit = () => {
+    setProductToEdit(product);
+    openEdit();
+    setProductToEditIndex(index)
+  };
+
   return (
     <div className="p-3 border border-gray-400 rounded-2xl sm:max-w-sm md:max-w-lg">
       <Image
@@ -22,12 +28,8 @@ const ProductCard = ({product}: IProps) => {
         className="rounded-2xl h-64 w-full object-cover"
       />
       <h3>{product.title}</h3>
-      <p>
-        {product.description}
-      </p>
-      <div className="flex space-x-2 p-1">
-       {renderColors}
-      </div>
+      <p>{product.description}</p>
+      <div className="flex space-x-2 p-1">{renderColors}</div>
       <div className="flex justify-between items-center">
         <span className="text-xl font-bold ">{product.price}</span>
         <Image
@@ -37,7 +39,9 @@ const ProductCard = ({product}: IProps) => {
         />
       </div>
       <div className="flex items-center gap-3 my-3">
-        <Button className="bg-indigo-700">Edit</Button>
+        <Button className="bg-indigo-700" onClick={onEdit}>
+          Edit
+        </Button>
         <Button className="bg-red-700">Delete</Button>
       </div>
     </div>
