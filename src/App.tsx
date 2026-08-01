@@ -15,6 +15,7 @@ import ErrorMessage from "./components/ErrorMessage";
 import CircleColor from "./components/ui/CircleColor";
 import Select from "./components/ui/Select";
 import type { TproductName } from "./types";
+import toast, { Toaster } from 'react-hot-toast';
 
 interface IProps {}
 const App = ({}: IProps) => {
@@ -143,6 +144,7 @@ const App = ({}: IProps) => {
     setProduct(defualtProductObj);
     setTempColor([]);
     close();
+    toast("product added")
   };
   const submitEditHandler = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -165,6 +167,7 @@ const App = ({}: IProps) => {
     setProductToEdit(defualtProductObj);
     setTempColor([]);
     closeEdit();
+    toast("product updated")
   };
   const onCancel = () => {
     setProduct(defualtProductObj);
@@ -178,6 +181,7 @@ const App = ({}: IProps) => {
     setProducts(updatedProducts);
     setProductToEdit(defualtProductObj);
     closeConfirmDelete()
+    toast("product deleted")
   }
   return (
     <>
@@ -298,6 +302,7 @@ const App = ({}: IProps) => {
           </Button>
         </div>
       </Modal>
+      <Toaster/>
     </>
   );
 };
