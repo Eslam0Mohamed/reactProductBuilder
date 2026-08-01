@@ -9,14 +9,20 @@ interface IProps {
   openEdit: () => void;
   index: number;
   setProductToEditIndex: (index: number) => void;
+  openConfirmDelete:()=>void
 }
-const ProductCard = ({ product, setProductToEdit, openEdit, index, setProductToEditIndex }: IProps) => {
+const ProductCard = ({ product, setProductToEdit, openEdit, index, setProductToEditIndex, openConfirmDelete }: IProps) => {
   const renderColors = product.colors.map((color) => (
     <CircleColor key={color} color={color} />
   ));
   const onEdit = () => {
     setProductToEdit(product);
     openEdit();
+    setProductToEditIndex(index)
+  };
+  const onRemove = () => {
+    setProductToEdit(product);
+    openConfirmDelete()
     setProductToEditIndex(index)
   };
 
@@ -42,7 +48,7 @@ const ProductCard = ({ product, setProductToEdit, openEdit, index, setProductToE
         <Button className="bg-indigo-700" onClick={onEdit}>
           Edit
         </Button>
-        <Button className="bg-red-700">Delete</Button>
+        <Button className="bg-red-700" onClick={onRemove}>Delete</Button>
       </div>
     </div>
   );

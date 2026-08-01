@@ -32,16 +32,31 @@ const App = ({}: IProps) => {
   let [isOpen, setIsOpen] = useState(false);
   let [isOpenEdit, setIsOpenEdit] = useState(false);
   let [tempColor, setTempColor] = useState<string[]>([]);
-  let [errors, setErrors] = useState<{title: string;description: string;imageURL: string;price: string;}>({ title: "", description: "", imageURL: "", price: "" });
+  let [errors, setErrors] = useState<{
+    title: string;
+    description: string;
+    imageURL: string;
+    price: string;
+  }>({ title: "", description: "", imageURL: "", price: "" });
   let [products, setProducts] = useState<IProduct[]>(productsList);
   let [product, setProduct] = useState<IProduct>(defualtProductObj);
   let [productToEdit, setProductToEdit] = useState<IProduct>(defualtProductObj);
   let [productToEditIndex, setProductToEditIndex] = useState<number>(0);
-  let [selectedCategory, setSelectedCategory] = useState<ICategory>(categories[0]);
+  let [selectedCategory, setSelectedCategory] = useState<ICategory>(
+    categories[0],
+  );
+  let [confirmDeleteProduct, setConfirmDeleteProduct] = useState(false);
 
-
-  const renderProduct = products.map((product,index) => (
-    <ProductCard key={product.title} setProductToEditIndex={setProductToEditIndex} index={index} product={product} setProductToEdit={setProductToEdit} openEdit={openEdit} />
+  const renderProduct = products.map((product, index) => (
+    <ProductCard
+      key={product.title}
+      index={index}
+      product={product}
+      openEdit={openEdit}
+      setProductToEdit={setProductToEdit}
+      setProductToEditIndex={setProductToEditIndex}
+      openConfirmDelete={openConfirmDelete}
+    />
   ));
   const renderColors = colors.map((color) => (
     <CircleColor
@@ -58,30 +73,28 @@ const App = ({}: IProps) => {
       }}
     />
   ));
-  const renderInputsWithErrorsMsg = (id:string,name:TproductName,label:string)=>{
+  const renderInputsWithErrorsMsg = (
+    id: string,
+    name: TproductName,
+    label: string,
+  ) => {
     return (
       <>
-      <label className="text-sm font-medium text-gray-700"
-                  htmlFor={id}
-                >
-                  {label}
-                </label>
-                <Input
-                  name={name}
-                  id={id}
-                  type={"text"}
-                  value={productToEdit[name] as string}
-                  onChange={onChangeEditHandler}
-                />
+        <label className="text-sm font-medium text-gray-700" htmlFor={id}>
+          {label}
+        </label>
+        <Input
+          name={name}
+          id={id}
+          type={"text"}
+          value={productToEdit[name] as string}
+          onChange={onChangeEditHandler}
+        />
 
-                {errors[name] && (
-                  <ErrorMessage
-                    msg={errors[name]}
-                  />
-                )}
-                </>
-    )
-  }
+        {errors[name] && <ErrorMessage msg={errors[name]} />}
+      </>
+    );
+  };
   function open() {
     setIsOpen(true);
   }
@@ -89,12 +102,19 @@ const App = ({}: IProps) => {
   function close() {
     setIsOpen(false);
   }
-    function openEdit() {
+  function openEdit() {
     setIsOpenEdit(true);
   }
 
   function closeEdit() {
     setIsOpenEdit(false);
+  }
+  function openConfirmDelete() {
+    setConfirmDeleteProduct(true);
+  }
+
+  function closeConfirmDelete() {
+    setConfirmDeleteProduct(false);
   }
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>): void => {
     const { value, name } = e.target;
@@ -116,44 +136,56 @@ const App = ({}: IProps) => {
       return;
     }
     console.log("data sent to DB");
-    setProducts([...products,{...product,colors:tempColor,category:selectedCategory}]);
+    setProducts([
+      ...products,
+      { ...product, colors: tempColor, category: selectedCategory },
+    ]);
     setProduct(defualtProductObj);
     setTempColor([]);
-    close();  
-    
+    close();
   };
   const submitEditHandler = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const errors = productValidation(productToEdit);
     setErrors(errors);
-    
+
     const hasError = Object.values(errors).some((v) => v !== "");
     if (hasError) {
-
       console.log(errors);
       return;
     }
     console.log("data sent to DB");
 
     const updatedProducts = [...products];
-    updatedProducts[productToEditIndex] = {...productToEdit,colors:tempColor.concat(productToEdit.colors)};
+    updatedProducts[productToEditIndex] = {
+      ...productToEdit,
+      colors: tempColor.concat(productToEdit.colors),
+    };
     setProducts(updatedProducts);
     setProductToEdit(defualtProductObj);
     setTempColor([]);
-    closeEdit(); 
+    closeEdit();
   };
   const onCancel = () => {
     setProduct(defualtProductObj);
     close();
     closeEdit();
+    closeConfirmDelete()
   };
+  const deleteProduct = () => {
+    const updatedProducts = [...products];
+    updatedProducts.splice(productToEditIndex, 1);
+    setProducts(updatedProducts);
+    setProductToEdit(defualtProductObj);
+    closeConfirmDelete()
+  }
   return (
     <>
       <Button className="bg-indigo-500" width="w-full" onClick={open}>
         ADD NEW Product
       </Button>
       <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 w-11/12 mx-auto py-6">
-{renderProduct}
+        {renderProduct}
       </div>
       {/* ADD NEW PRODUCT */}
       <Modal title="Adding Product" isOpen={isOpen} closeModel={close}>
@@ -194,7 +226,10 @@ const App = ({}: IProps) => {
             ))}
           </div>
           <div className="flex flex-wrap gap-2">{renderColors}</div>
-          <Select selected={selectedCategory} setSelected={setSelectedCategory} />
+          <Select
+            selected={selectedCategory}
+            setSelected={setSelectedCategory}
+          />
           <div className="flex items-center mt-2 space-x-3">
             <Button className="bg-indigo-500 ">Submit</Button>
             <Button className="bg-gray-500 " type="button" onClick={onCancel}>
@@ -203,19 +238,28 @@ const App = ({}: IProps) => {
           </div>
         </form>
       </Modal>
-      
       {/* EDIT PRODUCT */}
-      <Modal title="Edit Product" isOpen={isOpenEdit} closeModel={closeEdit}>
+      <Modal
+        title="Edit Product"
+        isOpen={isOpenEdit}
+        closeModel={close}
+      >
         <form onSubmit={submitEditHandler}>
-       
-              <div className="flex flex-col space-y-2 mb-2">
-                {renderInputsWithErrorsMsg("title","title","Product Title")}
-                {renderInputsWithErrorsMsg("desceiption","description","Product Description")}
-                {renderInputsWithErrorsMsg("imageURL","imageURL","Product imageURL")}
-                {renderInputsWithErrorsMsg("price","price","Product price")}
-              </div>
-          
-        
+          <div className="flex flex-col space-y-2 mb-2">
+            {renderInputsWithErrorsMsg("title", "title", "Product Title")}
+            {renderInputsWithErrorsMsg(
+              "desceiption",
+              "description",
+              "Product Description",
+            )}
+            {renderInputsWithErrorsMsg(
+              "imageURL",
+              "imageURL",
+              "Product imageURL",
+            )}
+            {renderInputsWithErrorsMsg("price", "price", "Product price")}
+          </div>
+
           <div>
             {tempColor.concat(productToEdit.colors).map((color) => (
               <span
@@ -228,7 +272,12 @@ const App = ({}: IProps) => {
             ))}
           </div>
           <div className="flex flex-wrap gap-2">{renderColors}</div>
-          <Select selected={productToEdit.category} setSelected={(value)=>{setProductToEdit({...productToEdit, category: value})}} />
+          <Select
+            selected={productToEdit.category}
+            setSelected={(value) => {
+              setProductToEdit({ ...productToEdit, category: value });
+            }}
+          />
           <div className="flex items-center mt-2 space-x-3">
             <Button className="bg-indigo-500 ">Edit</Button>
             <Button className="bg-gray-500 " type="button" onClick={onCancel}>
@@ -236,6 +285,18 @@ const App = ({}: IProps) => {
             </Button>
           </div>
         </form>
+      </Modal>
+      {/* DELETE PRODUCT */}
+      <Modal title="Delete Product" isOpen={confirmDeleteProduct} closeModel={closeConfirmDelete}>
+        <div className="text-sm text-gray-700 p-2">
+          <p>Are You Sure, You want to delete this product</p>
+        </div>
+        <div className="flex items-center mt-2 space-x-3">
+          <Button className="bg-indigo-500" onClick={deleteProduct}>Delete</Button>
+          <Button className="bg-gray-500 " type="button" onClick={onCancel}>
+            Cancel
+          </Button>
+        </div>
       </Modal>
     </>
   );
